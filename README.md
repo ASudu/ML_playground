@@ -1,6 +1,6 @@
 # ML-Playground
 
-In this repository, I try out a few Linear ALgebra and Machine Learning Algorithms.
+In this repository, I try out a few Linear ALgebra and Machine Learning Algorithms. The reference questions and test cases are from [DeepML](https://www.deep-ml.com/problems)
 
 ## Setup
 
