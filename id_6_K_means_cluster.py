@@ -1,12 +1,14 @@
 import numpy as np
 
-def k_means_clustering(points: list[tuple[float, float]], k: int, initial_centroids: list[tuple[float, float]], max_iterations: int) -> list[tuple[float, float]]:
+def k_means_clustering(points: list[tuple[float, float]], k: int, initial_centroids: list[tuple[float, float]],
+                       distance_metric: str="euclidean", max_iterations: int=100) -> list[tuple[float, float]]:
     """Perform K-means clustering given k initial centroids and max number of iterations.
 
     Args:
         points (list[tuple[float, float]]): List of points to cluster.
         k (int): Number of clusters.
         initial_centroids (list[tuple[float, float]]): Initial centroids for the clusters.
+        distance_metric (str): Distance metric to use ("euclidean", "manhattan", "chebyshev").
         max_iterations (int): Maximum number of iterations.
 
     Returns:
@@ -29,12 +31,12 @@ def k_means_clustering(points: list[tuple[float, float]], k: int, initial_centro
             raise ValueError("Unknown distance metric")
 
     centroids = initial_centroids
-    clus_map = {p: 0 for p in points}
+    clus_map = {tuple(p): 0 for p in points}
     clus_flag = False # Flag to check if cluster assignments change
 
     for i in range(max_iterations):
         # For each point calculate distance to centroids
-        for p in clus_map:
+        for p, _ in clus_map.items():
             distances = [dist(p, c) for c in centroids]
             clus_map[p] = np.argmin(distances)
             if clus_map[p] != np.argmin(distances):
@@ -51,7 +53,7 @@ def k_means_clustering(points: list[tuple[float, float]], k: int, initial_centro
         if not clus_flag:
             break
 
-    return centroids
+    return centroids, clus_to_point
 
 def main():
     # Test 1 - sol: [(1.0, 2.0), (10.0, 2.0)]
