@@ -13,21 +13,32 @@ def k_means_clustering(points: list[tuple[float, float]], k: int, initial_centro
         list[tuple[float, float]]: Final centroids of the clusters.
     """
 	
-    def dist(p1, p2):
+    def dist(p1, p2, name="euclidean"):
+        """Calculate distance between two points."""
         d = 0
 
-        for i in range(len(p1)):
-            d += (p1[i] - p2[i])**2
-        return np.sqrt(d)
+        if name == "euclidean": # 2-norm
+            return np.linalg.norm(np.array(p1) - np.array(p2))
+        
+        elif name == "manhattan": # 1-norm
+            return np.sum(np.abs(np.array(p1) - np.array(p2)))
+        
+        elif name == "chebyshev": # infinity-norm
+            return np.max(np.abs(np.array(p1) - np.array(p2)))
+        else:
+            raise ValueError("Unknown distance metric")
 
     centroids = initial_centroids
     clus_map = {p: 0 for p in points}
+    clus_flag = False # Flag to check if cluster assignments change
 
     for i in range(max_iterations):
         # For each point calculate distance to centroids
         for p in clus_map:
             distances = [dist(p, c) for c in centroids]
             clus_map[p] = np.argmin(distances)
+            if clus_map[p] != np.argmin(distances):
+                clus_flag = True
         
         # Update centroids
         clus_to_point = {i: [] for i in range(k)}
@@ -36,6 +47,9 @@ def k_means_clustering(points: list[tuple[float, float]], k: int, initial_centro
             clus_to_point[cluster].append(list(point))
         
         centroids = [tuple(np.mean(x, axis=0)) for x in clus_to_point.values()]
+
+        if not clus_flag:
+            break
 
     return centroids
 
