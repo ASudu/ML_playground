@@ -32,15 +32,16 @@ def k_means_clustering(points: list[tuple[float, float]], k: int, initial_centro
 
     centroids = initial_centroids
     clus_map = {tuple(p): 0 for p in points}
-    clus_flag = False # Flag to check if cluster assignments change
+    # clus_flag = False # Flag to check if cluster assignments change
+    cent_const = False # Flag to check if centroids change
 
     for i in range(max_iterations):
         # For each point calculate distance to centroids
         for p, _ in clus_map.items():
             distances = [dist(p, c) for c in centroids]
             clus_map[p] = np.argmin(distances)
-            if clus_map[p] != np.argmin(distances):
-                clus_flag = True
+            # if clus_map[p] != np.argmin(distances):
+            #     clus_flag = True
         
         # Update centroids
         clus_to_point = {i: [] for i in range(k)}
@@ -48,9 +49,12 @@ def k_means_clustering(points: list[tuple[float, float]], k: int, initial_centro
         for point, cluster in clus_map.items():
             clus_to_point[cluster].append(list(point))
         
-        centroids = [tuple(np.mean(x, axis=0)) for x in clus_to_point.values()]
+        new_centroids = [tuple(np.mean(x, axis=0)) for x in clus_to_point.values()]
+        if np.linalg.norm(sum(abs(np.array(new_centroids) - np.array(centroids)))) == 0:
+            cent_const = True
+        centroids = new_centroids
 
-        if not clus_flag:
+        if not cent_const:
             break
 
     return centroids, clus_to_point
